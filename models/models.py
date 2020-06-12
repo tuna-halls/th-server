@@ -5,6 +5,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import DateTime
 from sqlalchemy import Enum
+from sqlalchemy import JSON
 from sqlalchemy.ext.declarative import declarative_base
 
 from .enums import HallState
@@ -71,14 +72,14 @@ class HallFeature(TimestampedMixin, Base):
 	__tablename__ = "hallfeature"
 	id = Column(Integer, primary_key=True)
 	feature_type = Column(Enum(FeatureType))
-	settings = Column(String)
+	settings = Column(JSON)
 
 
 
 class HallMember(TimestampedMixin, Base):
 	__tablename__ = "hallmember"
 	id = Column(Integer, primary_key=True)
-	user_id = Column(Integer, ForeignKey('user.id'))
+	user_id = Column(Integer, ForeignKey('user.id'), nullable=True)
 	presence = Column(Enum(Presence))
 	display_name = Column(String)
 	profile_image = Column(String)
