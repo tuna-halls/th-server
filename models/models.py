@@ -38,6 +38,18 @@ class User(TimestampedMixin, Base):
 	member = relationship("HallMember", back_populates="user")
 
 
+hallfeature_hall_association = Table('hallfeature_hall', Base.metadata,
+    Column('hall_id', Integer, ForeignKey('hall.id')),
+    Column('hallfeature_id', Integer, ForeignKey('HallFeature.id'))
+)
+
+
+hallmember_hall_association = Table('hallmember_hall', Base.metadata,
+    Column('hall_id', Integer, ForeignKey('hall.id')),
+    Column('hallmember_id', Integer, ForeignKey('hallmember.id'))
+)
+
+
 class Hall(TimestampedMixin, Base):
 	__tablename__ = "hall"
 	id = Column(Integer, primary_key=True)
@@ -51,14 +63,13 @@ class Hall(TimestampedMixin, Base):
 	log_mode = Column(Enum(HallLogMode))
 	share_link = Column(String)
 	expires_at = Column(DateTime)
-	features = relationship("HallFeature", back_populates="hall")
-	members = relationship("HallMember")
+	features = relationship("HallFeature", secondary=hallfeatures_halls_association)
+	members = relationship("HallMember", secondary=hallmember_hall_association)
 
 
 class HallFeature(TimestampedMixin, Base):
 	__tablename__ = "hallfeature"
 	id = Column(Integer, primary_key=True)
-	hall_id = Column(Integer, ForeignKey('hall.id'))
 	feature_type = Column(Enum(FeatureType))
 	settings = Column(String)
 
@@ -67,9 +78,11 @@ class HallFeature(TimestampedMixin, Base):
 class HallMember(TimestampedMixin, Base):
 	__tablename__ = "hallmember"
 	id = Column(Integer, primary_key=True)
-	hall_id = Column(Integer, ForeignKey('hall.id'))
 	user_id = Column(Integer, ForeignKey('user.id'))
 	presence = Column(Enum(Presence))
 	display_name = Column(String)
 	profile_image = Column(String)
 	role = Column(Enum(Role))
+
+
+Base.metadata.create_all(engine)
