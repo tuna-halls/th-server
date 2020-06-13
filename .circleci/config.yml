@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/th-server
     docker:
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.7
         environment:
           PIPENV_VENV_IN_PROJECT: true
     steps:
@@ -12,7 +12,7 @@ jobs:
       - run: |
           sudo chown -R circleci:circleci /usr/local/bin
       - run: |
-          sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+          sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           # ensure this step occurs *before* installing dependencies
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
@@ -25,6 +25,8 @@ jobs:
           paths:
             - ".venv"
             - "/usr/local/bin"
-            - "/usr/local/lib/python3.6/site-packages"
+            - "/usr/local/lib/python3.7/site-packages"
+      - run: |
+          pipenv run black --check .
       - run: |
           pipenv run pytest
