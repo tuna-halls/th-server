@@ -1,19 +1,22 @@
-import datetime
+from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import DateTime
+from sqlalchemy import Table
 from sqlalchemy import Enum
 from sqlalchemy import JSON
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-from .enums import HallState
-from .enums import HallSecurityMode
-from .enums import HallLogMode
-from .enums import FeatureType
-from .enums import Role
-from .enums import Presence
+from enums import HallState
+from enums import HallSecurityMode
+from enums import HallLogMode
+from enums import FeatureType
+from enums import Role
+from enums import Presence
 
 import os
 
@@ -41,7 +44,7 @@ class User(TimestampedMixin, Base):
 
 hallfeature_hall_association = Table('hallfeature_hall', Base.metadata,
     Column('hall_id', Integer, ForeignKey('hall.id')),
-    Column('hallfeature_id', Integer, ForeignKey('HallFeature.id'))
+    Column('hallfeature_id', Integer, ForeignKey('hallfeature.id'))
 )
 
 
@@ -64,7 +67,7 @@ class Hall(TimestampedMixin, Base):
 	log_mode = Column(Enum(HallLogMode))
 	share_link = Column(String)
 	expires_at = Column(DateTime)
-	features = relationship("HallFeature", secondary=hallfeatures_halls_association)
+	features = relationship("HallFeature", secondary=hallfeature_hall_association)
 	members = relationship("HallMember", secondary=hallmember_hall_association)
 
 
